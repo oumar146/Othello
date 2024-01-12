@@ -264,13 +264,16 @@ class Bot:
         flip_list=[]
         index_list=[]
         max = 0
+        #recherche des positions de mouvement disponible / du nombre de pions retourné 
         for index in range(len(board)):
             if othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
                 list_position_play_able.append([board[index].x_pos,board[index].y_pos])
                 flip_list.append(othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player))
+        #recherche du nombre maximum de pion qu'il est possible de retourner
         for index in range(len(flip_list)):
             if max<flip_list[index][0][0]:
                 max = flip_list[index][0][0]  
+        #lister tous les indices qui me permettent de retourner le nombre de pions maximum 
         for index in range(len(flip_list)):
             if  flip_list[index][0][0] == max:
                 index_list.append(index)

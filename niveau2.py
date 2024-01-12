@@ -278,6 +278,7 @@ othello_board.create_board()
 # Draw the board
 othello_board.draw_board("Content")
 
+
 # Create 2 bots
 myBot = Bot()
 otherBot = Bot()

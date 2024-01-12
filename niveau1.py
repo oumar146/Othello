@@ -260,9 +260,11 @@ class Bot:
     # BOT FUNCTIONS
 
     def check_valid_moves(self,board,game):
+        list_position_play_able=[]
         for index in range(len(board)):
             if othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
-                return [board[index].x_pos,board[index].y_pos]
+                list_position_play_able.append([board[index].x_pos,board[index].y_pos])
+        return list_position_play_able[random.randint(0,len(list_position_play_able)-1)]
             
 # Create a new board & a new game instances
 othello_board = Board(8)
@@ -288,8 +290,6 @@ while not othello_game.is_game_over:
     # Second player / bot logic goes here
     else:
         #move_coordinates =  mybot.check()
-        move_coordinates = [0, 0]
-        move_coordinates[0] = int(input("Coordonnées en X: "))
-        move_coordinates[1] = int(input("Coordonnées en Y: "))
+        move_coordinates = myBot.check_valid_moves(othello_board.board,othello_game)
         othello_game.place_pawn(
         move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

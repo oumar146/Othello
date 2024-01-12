@@ -254,23 +254,44 @@ class Game:
 
 
 class Bot:
-    def __init__(self):
+    def __init_(self):
         self.name = "Name of your Bot"
 
     # BOT FUNCTIONS
 
     def check_valid_moves(self,board,game):
-        list_index=[]
+        tab_pos=[]
+        number_flip=[]
+        pos=0
+        max = 0
         for index in range(len(board)):
-            if othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
-                list_index.append(board[index].x_pos)
-                list_index.append(board[index].y_pos)
-                
-        return [board[index].x_pos,board[index].y_pos]
-            
+            #vérification de mouvement disponible
+            if  othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
+                #ajout des coordonnées des coups disponible
+                tab_pos.append([board[index].x_pos]) 
+                tab_pos.append([board[index].y_pos])
+                #ajout du nombre de piont qui vont se retourner
+                number_flip.append(othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player))
+                tab_pos.append(number_flip[0][0][0])
+                number_flip.pop(0)
+        print(tab_pos)
+        #rechercher les coordonnées qui vont retourner le maximum de pionts
+        for index in range(len(tab_pos)):
+            #si nous somme sur une case indiquant le nombre de piont à retourner
+            if ((index+1)%3) ==0:
+                #si le nombre de pions à retourner est supérieur au maximum , il devient le maximum
+                if max < tab_pos[index]:
+                    pos=index
+                    max=tab_pos[index]
+        print("pos -2 = ",pos-2)
+        print("pos -1 = ",pos-1)
+        print("max = ",max )
+        print( [tab_pos[pos-2][0],tab_pos[pos-1][0]])
+        return [tab_pos[pos-2][0],tab_pos[pos-1][0]]
 # Create a new board & a new game instances
 othello_board = Board(8)
 othello_game = Game()
+
 # Fill the board with tiles
 #create bord creer des tittle pour chaque case
 othello_board.create_board()
@@ -278,11 +299,9 @@ othello_board.create_board()
 # Draw the board
 othello_board.draw_board("Content")
 
-
 # Create 2 bots
 myBot = Bot()
 otherBot = Bot()
-myBot.check_valid_moves(othello_board.board,othello_game)
 # Loop until the game is over
 while not othello_game.is_game_over:
     # First player / bot logic goes here

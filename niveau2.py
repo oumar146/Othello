@@ -261,23 +261,11 @@ class Bot:
 
     def check_valid_moves(self,board,game):
         list_position_play_able=[]
-        flip_list=[]
-        index_list=[]
-        max = 0
-        #recherche des positions de mouvement disponible / du nombre de pions retourné 
-        for index in range(len(board)):
-            if othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
-                list_position_play_able.append([board[index].x_pos,board[index].y_pos])
-                flip_list.append(othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player))
-        #recherche du nombre maximum de pion qu'il est possible de retourner
-        for index in range(len(flip_list)):
-            if max<flip_list[index][0][0]:
-                max = flip_list[index][0][0]  
-        #lister tous les indices qui me permettent de retourner le nombre de pions maximum 
-        for index in range(len(flip_list)):
-            if  flip_list[index][0][0] == max:
-                index_list.append(index)
-        return list_position_play_able[index_list[random.randint(0,len(index_list)-1)]]
+        for index in range(len(board.board)):
+            if board.is_legal_move(board.board[index].x_pos,board.board[index].y_pos,game.active_player) != False:
+                list_position_play_able.append([board.board[index].x_pos,board.board[index].y_pos])
+                
+        return list_position_play_able[random.randint(0,len(list_position_play_able)-1)]
             
 # Create a new board & a new game instances
 othello_board = Board(8)
@@ -292,12 +280,11 @@ othello_board.draw_board("Content")
 # Create 2 bots
 myBot = Bot()
 otherBot = Bot()
-myBot.check_valid_moves(othello_board.board,othello_game)
 # Loop until the game is over
 while not othello_game.is_game_over:
     # First player / bot logic goes here
     if (othello_game.active_player == "⚫"):
-        move_coordinates = myBot.check_valid_moves(othello_board.board,othello_game)
+        move_coordinates = myBot.check_valid_moves(othello_board,othello_game)
         othello_game.place_pawn(
         move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
     # Second player / bot logic goes here

@@ -22,6 +22,22 @@ class Board:
                     self.board.append(Tile(x_pos, y_pos, "X", "🟩"))
         self.place_initial_pawns()
 
+    # function allow to initialize a bord with a matrix
+    def initialiez_matrix(self):
+        
+        matrice_list = [
+            100, -25,  50,  50,  50,  50, -25, 100,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+             50, -15,  10,  10,  10,  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10,  10,  10,  10, -15,  50,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+            100, -25,  50,  50,  50,  50, -25,	100
+        ]
+        for index in range(len(self.board)):
+            if self.board[index].content != 'X':
+                self.board[index].content = matrice_list[index] 
     #  This will print the game board, depending on the data_type
     #  Data types are "Coordinates", "Type" and "Content"
     def draw_board(self, data_type):
@@ -257,30 +273,14 @@ class Game:
 
 
 class Bot:
-    def __init__(self):
-        self.name = "Name of your Bot"
-
-    # BOT FUNCTIONS
     
+    def __init__(self):
+        self.name = "Babaaaaa"
+
+    # BOT FUNCTIONS                   
     def check_valid_moves(self, board, game):
-        newboard = Board(8)
-        newboard.create_board()
         newboard = deepcopy(board)
-        matrice_list = [
-            100, -25,  50,  50,  50,  50, -25, 100,
-            -25, -50, -15, -15, -15, -15, -50, -25,
-             50, -15,  10,  10,  10,  10, -15,  50,
-             50, -15,  10, 'X', 'X',  10, -15,  50,
-             50, -15,  10, 'X', 'X',  10, -15,  50,
-             50, -15,  10,  10,  10,  10, -15,  50,
-            -25, -50, -15, -15, -15, -15, -50, -25,
-            100, -25,  50,  50,  50,  50, -25,	100
-        ]
-        for index in range(len(newboard.board)):
-            if newboard.board[index].content != 'X':
-                newboard.board[index].content = matrice_list[index]
-        print(newboard)
-        newboard.draw_board("Content")
+        newboard.initialiez_matrix()
         max_points = -10000
         playable_moves = []
         
@@ -289,18 +289,17 @@ class Bot:
                 points_per_case = 0
                 weight = -10000
                 square_info = board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player)
-                #ajout du poids de la case 
+                #ajout du poids en fonction de la case
                 weight = newboard.board[index].content
-                #On vérifie si la case est de coin ou un bord
                 print(f"coordonées : {[board.board[index].x_pos,board.board[index].y_pos]}")
                 print(f"poids = {weight}")
                 #On calcule le nombre de points en fonctions de la position et de la direction
+                #square_direction /points_per_case / 
                 for square_direction in range(len(square_info)):
                     points_per_case += square_info[square_direction][0]
                 points_per_case += weight
                 print(f"poids + nb de pts = {points_per_case}")
                 #On récupère le coup qui rapporte le maximum de points
-                points_per_case += weight
                 if max_points == points_per_case:
                     playable_moves.append([board.board[index].x_pos, board.board[index].y_pos])
                 elif max_points < points_per_case:

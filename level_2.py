@@ -325,4 +325,4 @@ while not othello_game.is_game_over:
         move_coordinates[0] = int(input("Coordonnées en X: "))
         move_coordinates[1] = int(input("Coordonnées en Y: "))
         othello_game.place_pawn(
-            move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+        move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

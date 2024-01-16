@@ -332,9 +332,8 @@ while not othello_game.is_game_over:
 
     # Second player / bot logic goes here
     else:
-        #move_coordinates =  mybot.check()
         move_coordinates = [0, 0]
         move_coordinates[0] = int(input("Coordonnées en X: "))
         move_coordinates[1] = int(input("Coordonnées en Y: "))
         othello_game.place_pawn(
-        move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+            move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

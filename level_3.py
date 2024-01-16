@@ -283,6 +283,10 @@ class Bot:
         newboard.initialiez_matrix()
         max_points = -10000
         playable_moves = []
+        pos_left_to_top =[0,0]
+        pos_left_to_bottom =[0,7]
+        pos_right_to_top =[7,0]
+        pos_right_to_bottom =[7,7]
         
         for index in range(len(board.board)):
             if board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player) != False:

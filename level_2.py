@@ -272,8 +272,8 @@ class Bot:
                 square_info = board.is_legal_move(index.x_pos, index.y_pos, game.active_player)
                 print(f"Liste des mouvements pour cette case : {square_info}")
                 
-                for square_direction in range(len(square_info)):
-                    points_per_case += square_info[square_direction][0]
+                for square_direction in square_info:
+                    points_per_case += square_direction[0]
 
                 if max_points == points_per_case:
                     playable_moves.append([index.x_pos, index.y_pos])
@@ -284,7 +284,7 @@ class Bot:
         print(f"Coups jouables : {playable_moves}")
         print(f"Gains max : {max_points}")
 
-        return playable_moves[random.randint(0,len(playable_moves)-1)]
+        return random.choice(playable_moves)
 
 
         print("Il faut récupérer toutes les cases du tableau")
@@ -320,9 +320,11 @@ while not othello_game.is_game_over:
 
     # Second player / bot logic goes here
     else:
-        print(myBot.check_valid_moves)
         move_coordinates = [0, 0]
-        move_coordinates[0] = int(input("Coordonnées en X: "))
-        move_coordinates[1] = int(input("Coordonnées en Y: "))
+        coord = myBot.check_valid_moves(othello_board, othello_game)
+        #print("coordonnées")
+        #print(coord[0][0][1])
+        move_coordinates[0] = coord[0]
+        move_coordinates[1] = coord[1]
         othello_game.place_pawn(
-        move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+            move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 
 # Object used to create new boards
 
@@ -262,7 +263,25 @@ class Bot:
     # BOT FUNCTIONS
     
     def check_valid_moves(self, board, game):
-        
+        newboard = Board(8)
+        newboard.create_board()
+        newboard = deepcopy(board)
+        matrice_list = [
+            100, -25,  50,  50,  50,  50, -25, 100,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+             50, -15,  10,  10,  10,  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10,  10,  10,  10, -15,  50,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+            100, -25,  50,  50,  50,  50, -25,	100
+        ]
+        for index in range(len(newboard.board)):
+            if newboard.board[index].content != 'X':
+                newboard.board[index].content = matrice_list[index]
+        print(newboard)
+                
+        newboard.draw_board("Content")
         max_points = 0
         corner_squares_points = 65
         border_squares_points = 15 
@@ -272,20 +291,15 @@ class Bot:
                     [0,6], [0,7], [1,7],
                     [7,6], [7,7], [6,7]]
         
-        for index in board.board:
-            if board.is_legal_move(index.x_pos, index.y_pos, game.active_player) != False:
+        for index in range(len(board.board)):
+            if board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player) != False:
                 points_per_case = 0
-                square_info = board.is_legal_move(index.x_pos, index.y_pos, game.active_player)
+                square_info = board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player)
                 #print(f"Liste des mouvements pour cette case : {square_info}")
-
+                #vérifier le poids de la case 
+                points_per_case = newboard.board[index].content
+                print(points_per_case)
                 #On vérifie si la case est de coin ou un bord
-                if index.type == 'X':
-                    if [index.x_pos, index.y_pos] in c_squares:
-                        points_per_case = corner_squares_points
-                        #print("Coin détecté")
-                    else:
-                        points_per_case = border_squares_points
-                        #print("Bord détecté")
 
                 #On calcule le nombre de points en fonctions de la position et de la direction
                 for square_direction in range(len(square_info)):
@@ -293,9 +307,9 @@ class Bot:
 
                 #On récupère le coup qui rapporte le maximum de points
                 if max_points == points_per_case:
-                    playable_moves.append([index.x_pos, index.y_pos])
+                    playable_moves.append([board.board[index].x_pos, board.board[index].y_pos])
                 elif max_points < points_per_case:
-                    playable_moves = [[index.x_pos, index.y_pos]]
+                    playable_moves = [[board.board[index].x_pos, board.board[index].y_pos]]
                     max_points  = points_per_case
 
         #print(f"Coups jouables : {playable_moves}")

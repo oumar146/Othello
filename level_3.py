@@ -1,6 +1,8 @@
 import random
 
 # Object used to create new boards
+
+
 class Board:
     def __init__(self, size):
         self.size = size
@@ -258,17 +260,59 @@ class Bot:
         self.name = "Name of your Bot"
 
     # BOT FUNCTIONS
+    
+    def check_valid_moves(self, board, game):
+        
+        max_points = 0
+        corner_squares_points = 65
+        border_squares_points = 15 
+        playable_moves = []
+        c_squares = [[0, 0], [0,1], [1,0], 
+                    [6,0], [7,0], [7,1],
+                    [0,6], [0,7], [1,7],
+                    [7,6], [7,7], [6,7]]
+        
+        for index in board.board:
+            if board.is_legal_move(index.x_pos, index.y_pos, game.active_player) != False:
+                points_per_case = 0
+                square_info = board.is_legal_move(index.x_pos, index.y_pos, game.active_player)
+                #print(f"Liste des mouvements pour cette case : {square_info}")
 
-    def check_valid_moves(self,board,game):
-        for index in range(len(board)):
-            if othello_board.is_legal_move(board[index].x_pos,board[index].y_pos,game.active_player) != False:
-                return [board[index].x_pos,board[index].y_pos]
-            
+                #On vérifie si la case est de coin ou un bord
+                if index.type == 'X':
+                    if [index.x_pos, index.y_pos] in c_squares:
+                        points_per_case = corner_squares_points
+                        #print("Coin détecté")
+                    else:
+                        points_per_case = border_squares_points
+                        #print("Bord détecté")
+
+                #On calcule le nombre de points en fonctions de la position et de la direction
+                for square_direction in range(len(square_info)):
+                    points_per_case += square_info[square_direction][0]
+
+                #On récupère le coup qui rapporte le maximum de points
+                if max_points == points_per_case:
+                    playable_moves.append([index.x_pos, index.y_pos])
+                elif max_points < points_per_case:
+                    playable_moves = [[index.x_pos, index.y_pos]]
+                    max_points  = points_per_case
+
+        #print(f"Coups jouables : {playable_moves}")
+        #print(f"Gains max : {max_points}")
+
+        return playable_moves[random.randint(0,len(playable_moves)-1)]
+
+
+        print("Il faut récupérer toutes les cases du tableau")
+        print("Vérifier quels coups sont jouables")
+        print("Et renvoyer les coordonnées")
+
 # Create a new board & a new game instances
 othello_board = Board(8)
 othello_game = Game()
+
 # Fill the board with tiles
-#create bord creer des tittle pour chaque case
 othello_board.create_board()
 
 # Draw the board
@@ -277,19 +321,25 @@ othello_board.draw_board("Content")
 # Create 2 bots
 myBot = Bot()
 otherBot = Bot()
-myBot.check_valid_moves(othello_board.board,othello_game)
+
 # Loop until the game is over
 while not othello_game.is_game_over:
     # First player / bot logic goes here
     if (othello_game.active_player == "⚫"):
-        move_coordinates = myBot.check_valid_moves(othello_board.board,othello_game)
+        move_coordinates = [0, 0]
+        coord = myBot.check_valid_moves(othello_board, othello_game)
+        #print("coordonnées")
+        #print(coord[0][0][1])
+        move_coordinates[0] = coord[0]
+        move_coordinates[1] = coord[1]
         othello_game.place_pawn(
-        move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+            move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+
     # Second player / bot logic goes here
     else:
-        #move_coordinates =  mybot.check()
+        print(myBot.check_valid_moves)
         move_coordinates = [0, 0]
         move_coordinates[0] = int(input("Coordonnées en X: "))
         move_coordinates[1] = int(input("Coordonnées en Y: "))
         othello_game.place_pawn(
-        move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)
+            move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

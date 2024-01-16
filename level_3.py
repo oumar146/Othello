@@ -280,41 +280,32 @@ class Bot:
             if newboard.board[index].content != 'X':
                 newboard.board[index].content = matrice_list[index]
         print(newboard)
-                
         newboard.draw_board("Content")
-        max_points = 0
-        corner_squares_points = 65
-        border_squares_points = 15 
+        max_points = -10000
         playable_moves = []
-        c_squares = [[0, 0], [0,1], [1,0], 
-                    [6,0], [7,0], [7,1],
-                    [0,6], [0,7], [1,7],
-                    [7,6], [7,7], [6,7]]
         
         for index in range(len(board.board)):
             if board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player) != False:
                 points_per_case = 0
+                weight = -10000
                 square_info = board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player)
-                #print(f"Liste des mouvements pour cette case : {square_info}")
-                #vérifier le poids de la case 
-                points_per_case = newboard.board[index].content
-                print(points_per_case)
+                #ajout du poids de la case 
+                weight = newboard.board[index].content
                 #On vérifie si la case est de coin ou un bord
-
+                print(f"coordonées : {[board.board[index].x_pos,board.board[index].y_pos]}")
+                print(f"poids = {weight}")
                 #On calcule le nombre de points en fonctions de la position et de la direction
                 for square_direction in range(len(square_info)):
                     points_per_case += square_info[square_direction][0]
-
+                points_per_case += weight
+                print(f"poids + nb de pts = {points_per_case}")
                 #On récupère le coup qui rapporte le maximum de points
+                points_per_case += weight
                 if max_points == points_per_case:
                     playable_moves.append([board.board[index].x_pos, board.board[index].y_pos])
                 elif max_points < points_per_case:
                     playable_moves = [[board.board[index].x_pos, board.board[index].y_pos]]
                     max_points  = points_per_case
-
-        #print(f"Coups jouables : {playable_moves}")
-        #print(f"Gains max : {max_points}")
-
         return playable_moves[random.randint(0,len(playable_moves)-1)]
 
 # Create a new board & a new game instances

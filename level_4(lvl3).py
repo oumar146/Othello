@@ -279,7 +279,9 @@ class Bot:
         #print(matrice_list)
         max_points = -10000
         playable_moves = []
-
+        final_max_point = 0
+        points_per_move = []
+        final_playable_moves = []
         turn = game.score_black + game.score_white - 4
         for index in range(len(board.board)):
             square_info = board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player)
@@ -307,25 +309,21 @@ class Bot:
         if depth > 0:
             depth -=1 
             playable_moves = self.best_moves(playable_moves, board, game, depth)
+        if depth==0:
             
             # 2 list for the points / final moves
-            points_per_move = []
-            final_playable_moves = []
             
             # Get the points value and store them
             for move in playable_moves:
                 points_per_move.append(move[2])
             # Check for the maximum value
             final_max_point = max(points_per_move)
-            
             # Only fill the final list with the highest score moves
             for move in playable_moves:
                 if(move[2] == final_max_point):
                     final_playable_moves.append(move)
-            
-        print("x")
-        print(playable_moves)
-        return playable_moves[random.randint(0,len(playable_moves)-1)]
+
+        return random.choice(final_playable_moves)
     
     def best_moves(self,playable_moves, board, game, depth):
         for index in playable_moves:

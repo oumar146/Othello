@@ -569,7 +569,7 @@ def play_games(number_of_games):
                 move_coordinates = [0, 0]
                 #coord = myBot.check_valid_moves(othello_board, othello_game)
                 #coord = croto_bot.check_valid_moves(othello_board, othello_game)
-                dcoord = myBot.check_valid_moves_test(othello_board, othello_game,2)
+                coord = myBot.check_valid_moves_test(othello_board, othello_game,2)
                 #print("coordonnées")
                 #print(coord[0][0][1])
                 move_coordinates[0] = coord[0]
@@ -591,4 +591,4 @@ def play_games(number_of_games):
     print("Il y a " + str(egalite) + " égalités")
         
 
-play_games(100)
+play_games(1)

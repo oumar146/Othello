@@ -308,7 +308,11 @@ class Bot:
         
         if depth > 0:
             depth -=1 
+            print("mes coups dans check valid move : ")
+            print(playable_moves)
             playable_moves = self.best_moves(playable_moves, board, game, depth) 
+            print("mes coups dans check valid move apres l'appelle de la fct : ")
+            print(playable_moves)
             # 2 list for the points / final moves
             # Get the points value and store them
             for move in playable_moves:
@@ -328,20 +332,20 @@ class Bot:
         print("mes coups : ")
         print(playable_moves)
         for index in playable_moves:
-            print("xx")
             # Init copy board / game
             new_board = deepcopy(board)
             new_game = deepcopy(game)
             # Place pawn, recursive call for check_valid_moves
             #print(index)
+            print("faux tableau")
             new_game.place_pawn(index[0], index[1], new_board, new_game.active_player)
             if new_game.is_game_over == False:
                 opponent_points = self.check_valid_moves(new_board, new_game, depth)
+                print("coupe adverse possible : ")
+                print(opponent_points)
             # Tile score update
                 index.append(index[2]-opponent_points[2])
                 index.pop(2)
-        print("apres focntion : ")
-        print(playable_moves)
         return playable_moves
 
     # function allow to initialize a bord with a matrix
@@ -460,6 +464,8 @@ while not othello_game.is_game_over:
 
     # Second player / bot logic goes here
     else:
-        move_coordinates = myBot.check_valid_moves(othello_board, othello_game,1)
+        move_coordinates = [0, 0]
+        move_coordinates[0] = int(input("Coordonnées en X: "))
+        move_coordinates[1] = int(input("Coordonnées en Y: "))
         othello_game.place_pawn(
             move_coordinates[0], move_coordinates[1], othello_board, othello_game.active_player)

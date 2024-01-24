@@ -279,33 +279,6 @@ class Bot:
 
     # BOT FUNCTIONS                   
     def check_valid_moves(self, board, game):
-        
-        max_points = 0
-        playable_moves = []
-        
-        for index in board.board:
-            if board.is_legal_move(index.x_pos, index.y_pos, game.active_player) != False:
-                points_per_case = 0
-                square_info = board.is_legal_move(index.x_pos, index.y_pos, game.active_player)
-                print(f"Liste des mouvements pour cette case : {square_info}")
-                
-                for square_direction in square_info:
-                    points_per_case += square_direction[0]
-
-                if max_points == points_per_case:
-                    playable_moves.append([index.x_pos, index.y_pos])
-                elif max_points < points_per_case:
-                    playable_moves = [[index.x_pos, index.y_pos]]
-                    max_points  = points_per_case
-
-        print(f"Coups jouables : {playable_moves}")
-        print(f"Gains max : {max_points}")
-
-        return random.choice(playable_moves)
-
-
-
-    def check_valid_moves_test(self, board, game):
         matrice_list = [
             100, -25,  50,  50,  50,  50, -25, 100,
             -25, -50, -15, -15, -15, -15, -50, -25,
@@ -321,10 +294,6 @@ class Bot:
         #print(matrice_list)
         max_points = -10000
         playable_moves = []
-        pos_left_to_top =[0,0]
-        pos_left_to_bottom =[0,7]
-        pos_right_to_top =[7,0]
-        pos_right_to_bottom =[7,7]
         turn = game.score_black + game.score_white - 4
         newboard.draw_board("Content")
         for index in range(len(board.board)):
@@ -351,6 +320,80 @@ class Bot:
                     max_points  = points_per_case
                 
         return playable_moves[random.randint(0,len(playable_moves)-1)]
+
+
+    def check_valid_moves_test(self, board, game,depth):
+        matrice_list = [
+            100, -25,  50,  50,  50,  50, -25, 100,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+             50, -15,  10,  10,  10,  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10, 'X', 'X',  10, -15,  50,
+             50, -15,  10,  10,  10,  10, -15,  50,
+            -25, -50, -15, -15, -15, -15, -50, -25,
+            100, -25,  50,  50,  50,  50, -25,	100
+        ]
+        newboard = deepcopy(board)
+        matrice_list = self.initialize_matrix(newboard,matrice_list, game.active_player)
+        max_points = -10000
+        playable_moves = []
+        final_max_point = 0
+        points_per_move = []
+        final_playable_moves = []
+        turn = game.score_black + game.score_white - 4
+        for index in range(len(board.board)):
+            square_info = board.is_legal_move(board.board[index].x_pos, board.board[index].y_pos, game.active_player)
+            if square_info != False:
+                points_per_case = 0
+                #ajout du poids en fonction de la case
+                weight = newboard.board[index].content
+                #On calcule le nombre de points en fonctions de la position et de la direction
+                #square_direction /points_per_case / 
+                for square_direction in range(len(square_info)):
+                    if(turn < 20):
+                        points_per_case -= square_info[square_direction][0]
+                    else:
+                        points_per_case += square_info[square_direction][0]
+
+                points_per_case += weight
+                #On récupère le coup qui rapporte le maximum de points
+                if max_points == points_per_case:
+                    playable_moves.append([board.board[index].x_pos, board.board[index].y_pos,max_points])
+                elif max_points < points_per_case:
+                    max_points  = points_per_case
+                    playable_moves = [[board.board[index].x_pos, board.board[index].y_pos,max_points]]
+        
+        
+        if depth > 0:
+            depth -=1 
+            playable_moves = self.best_moves(playable_moves, board, game, depth) 
+            # 2 list for the points / final moves
+            # Get the points value and store them
+            for move in playable_moves:
+                points_per_move.append(move[2])
+            # Check for the maximum value
+            final_max_point = max(points_per_move)
+            # Only fill the final list with the highest score moves
+            for move in playable_moves:
+                if(move[2] == final_max_point):
+                    final_playable_moves.append(move)
+            return random.choice(final_playable_moves)
+        return random.choice(playable_moves)
+    
+    def best_moves(self,playable_moves, board, game, depth):
+        for index in playable_moves:
+            # Init copy board / game
+            new_board = deepcopy(board)
+            new_game = deepcopy(game)
+            # Place pawn, recursive call for check_valid_moves
+            #print(index)
+            new_game.place_pawn(index[0], index[1], new_board, new_game.active_player)
+            if new_game.is_game_over == False:
+                opponent_points = self.check_valid_moves_test(new_board, new_game, depth)
+            # Tile score update
+                index.append(index[2]-opponent_points[2])
+                index.pop(2)
+        return playable_moves
 
     # function allow to initialize a bord with a matrix
     def initialize_matrix(self,table,matrice_list,color):
@@ -438,6 +481,53 @@ class Bot:
             if table.board[index].content != 'X':
                 table.board[index].content = matrice_list[index] 
         return matrice_list
+# Classe du Bot
+class CrotoBotEz:
+    def __init__(self):
+        self.coners = [[0, 0], [7, 0], [0, 7], [7, 7]]
+        self.avoided_tiles = [[1, 0], [0, 1],  [1, 1], [1, 7], [0, 6], [1, 6], [6, 0], [7, 1], [6, 1], [6, 7], [7, 6], [6, 6]]
+
+    # BOT FUNCTIONS
+
+    def check_valid_moves(self, board, game):
+        max_points = -999
+        best_moves = []
+        current_move = []
+
+        for current_tile in board.board:
+            points = 0
+
+            if(board.is_tile_empty):
+                current_move = board.is_legal_move(current_tile.x_pos, current_tile.y_pos, game.active_player)
+                
+                if (current_move != False):
+                    for tiles_to_flip in current_move:
+                        points += tiles_to_flip[0]
+                    
+                    points += self.get_tile_weight(current_tile.x_pos, current_tile.y_pos)
+                    if(points > max_points):
+                        best_moves = [[current_tile.x_pos, current_tile.y_pos]]
+                        max_points = points
+                    elif(points == max_points):
+                        best_moves.append([current_tile.x_pos, current_tile.y_pos])
+
+        return random.choice(best_moves)
+                
+    def get_tile_weight(self, x, y):
+        total_points = 0
+
+        for current_coord in self.coners:
+            if x == current_coord[0] and y == current_coord[1]:
+                total_points += 100
+                break
+            
+        for current_coord in self.avoided_tiles:
+            if x == current_coord[0] and y == current_coord[1]:
+                total_points -= 30
+                break
+        
+        return total_points
+    
 
 def play_games(number_of_games):
     white_victories = 0
@@ -457,12 +547,15 @@ def play_games(number_of_games):
         # Create 2 bots
         myBot = Bot()
         otherBot = Bot()
+        # Création du Bot
+        croto_bot = CrotoBotEz()
 
         while not othello_game.is_game_over:
             # First player / bot logic goes here
             if(othello_game.active_player == "⚫"):
                 move_coordinates = [0, 0]
-                coord = myBot.check_valid_moves_test(othello_board, othello_game)
+                #coord = myBot.check_valid_moves_test(othello_board, othello_game,2)
+                coord = croto_bot.check_valid_moves(othello_board, othello_game)
                 #print("coordonnées")
                 #print(coord[0][0][1])
                 move_coordinates[0] = coord[0]
@@ -474,8 +567,9 @@ def play_games(number_of_games):
             # Second player / bot logic goes here
             else:
                 move_coordinates = [0, 0]
-                move_coordinates = [0, 0]
-                coord = myBot.check_valid_moves(othello_board, othello_game)
+                #coord = myBot.check_valid_moves(othello_board, othello_game)
+                #coord = croto_bot.check_valid_moves(othello_board, othello_game)
+                dcoord = myBot.check_valid_moves_test(othello_board, othello_game,2)
                 #print("coordonnées")
                 #print(coord[0][0][1])
                 move_coordinates[0] = coord[0]

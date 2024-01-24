@@ -308,11 +308,8 @@ class Bot:
         
         if depth > 0:
             depth -=1 
-            playable_moves = self.best_moves(playable_moves, board, game, depth)
-        if depth==0:
-            
+            playable_moves = self.best_moves(playable_moves, board, game, depth) 
             # 2 list for the points / final moves
-            
             # Get the points value and store them
             for move in playable_moves:
                 points_per_move.append(move[2])
@@ -322,25 +319,29 @@ class Bot:
             for move in playable_moves:
                 if(move[2] == final_max_point):
                     final_playable_moves.append(move)
-
-        return random.choice(final_playable_moves)
+            print("sortie :")
+            print(final_playable_moves)
+            return random.choice(final_playable_moves)
+        return random.choice(playable_moves)
     
     def best_moves(self,playable_moves, board, game, depth):
+        print("mes coups : ")
+        print(playable_moves)
         for index in playable_moves:
+            print("xx")
             # Init copy board / game
             new_board = deepcopy(board)
             new_game = deepcopy(game)
-            
             # Place pawn, recursive call for check_valid_moves
-            print(index)
+            #print(index)
             new_game.place_pawn(index[0], index[1], new_board, new_game.active_player)
-            if new_game.is_game_over ==False:
-                opponent_points = self.check_valid_moves(new_board,new_game,depth)
-                print("coups adverse ",opponent_points)
-                print("mon poids : ",index[2],"\npoids adversaire : ",opponent_points[2])
+            if new_game.is_game_over == False:
+                opponent_points = self.check_valid_moves(new_board, new_game, depth)
             # Tile score update
                 index.append(index[2]-opponent_points[2])
                 index.pop(2)
+        print("apres focntion : ")
+        print(playable_moves)
         return playable_moves
 
     # function allow to initialize a bord with a matrix
